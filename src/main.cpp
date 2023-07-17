@@ -1,21 +1,6 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Wire.h>
-#include <InfluxDbClient.h>
-#include <InfluxDbCloud.h>
- 
-// Influxdb cloud config data
-#define INFLUXDB_URL ""
-#define INFLUXDB_TOKEN ""
-#define INFLUXDB_ORG ""
-#define INFLUXDB_BUCKET ""
-
-// Time zone info
-#define TZ_INFO "UTC-2"
-
-// Declare InfluxDB client instance with preconfigured InfluxCloud certificate
-InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
-
 
 // Wi-Fi credentials
 const char* ssid = "";
