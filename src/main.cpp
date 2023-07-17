@@ -34,7 +34,7 @@ void loop() {
 
   // Send POST request to the receiver (Controller 1)
   WiFiClient client;
-  Serial.println("sdadsdsa");
+
   if (client.connect(receiverIP, receiverPort)) {
     String data = "mq_data=" + String(MQ135_data);
     String request = String("POST / HTTP/1.1\r\n");
