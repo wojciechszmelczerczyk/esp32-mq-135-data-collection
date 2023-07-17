@@ -11,17 +11,19 @@
 #define INFLUXDB_BUCKET ""
 
 // Time zone info
-#define TZ_INFO "UTC2"
+#define TZ_INFO "UTC-2"
 
 // Declare InfluxDB client instance with preconfigured InfluxCloud certificate
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
 
-// Declare Data point
-Point sensor("environment");
 
 // Wi-Fi credentials
 const char* ssid = "";
 const char* password = "";
+
+// IP address and port of the receiver (Controller 1)
+const char* receiverIP = "";
+const int receiverPort = 80;
 
 void setup() {
   Serial.begin(115200);
@@ -40,37 +42,32 @@ void setup() {
   Serial.print("IP adress: ");
   Serial.println(WiFi.localIP());
 
-  timeSync(TZ_INFO, "pool.ntp.org", "time.nis.gov");
-
-  // // Check server connection
-  if(client.validateConnection()) {
-    Serial.print("Connected to InfluxDB: ");
-    Serial.println(client.getServerUrl());
-  } else {
-    Serial.print("InfluxDB connection failed: ");
-    Serial.println(client.getLastErrorMessage());
-  }
 }
 
 void loop() {
-  int MQ135_data = analogRead(GPIO_NUM_32);
-  Serial.println(MQ135_data);
-  sensor.addField("air_index", MQ135_data);
+  long MQ135_data = analogRead(GPIO_NUM_32);
 
-  Serial.println(sensor.toLineProtocol());
-
-  // Write data point to InfluxDB
-  if (client.writePoint(sensor)) {
-    Serial.println("Data point sent to InfluxDB successfully");
-  } else {
-    Serial.print("Error sending data point to InfluxDB: ");
-    Serial.println(client.getLastErrorMessage());
+  // Send POST request to the receiver (Controller 1)
+  WiFiClient client;
+  Serial.println("sdadsdsa");
+  if (client.connect(receiverIP, receiverPort)) {
+    String data = "mq_data=" + String(MQ135_data);
+    String request = String("POST / HTTP/1.1\r\n");
+    request.concat("Host: ");
+    request.concat(receiverIP);
+    request.concat("\r\n");
+    request.concat("Content-Type: application/x-www-form-urlencoded\r\n");
+    request.concat("Content-Length: ");
+    request.concat(String(data.length()));
+    request.concat("\r\n");
+    request.concat("Connection: close\r\n\r\n");
+    request.concat(data);
+    request.concat("\r\n");
+    
+    client.print(request);
+    delay(100);
   }
-
-  // Print the sensor readings
-  Serial.print("Air index: ");
-  Serial.print(MQ135_data);
-
+  
 
   delay(60000); // Wait for 1 minute before the next reading
 }
