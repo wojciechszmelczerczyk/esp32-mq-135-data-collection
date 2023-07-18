@@ -6,7 +6,7 @@
 const char* ssid = "";
 const char* password = "";
 
-// IP address and port of the receiver (Controller 1)
+// IP address and port of the receiver (ESP-32 + BME280)
 const char* receiverIP = "";
 const int receiverPort = 80;
 
@@ -32,7 +32,7 @@ void setup() {
 void loop() {
   long MQ135_data = analogRead(GPIO_NUM_32);
 
-  // Send POST request to the receiver (Controller 1)
+  // Send POST request to the receiver (ESP-32 + BME280)
   WiFiClient client;
 
   if (client.connect(receiverIP, receiverPort)) {
